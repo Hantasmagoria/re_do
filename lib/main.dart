@@ -7,6 +7,10 @@ class Appln extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Re:do',
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: Colors.cyanAccent,
+      ),
       home: TodoApp()
     );
   }
@@ -19,6 +23,7 @@ class TodoApp extends StatefulWidget {
 
 class TodoAppState extends State<TodoApp> {
   List<String> _todoItems = [];
+  var _isEditMode = false;
 
   void _addTodoItem(String task){
     setState(() {
@@ -30,53 +35,51 @@ class TodoAppState extends State<TodoApp> {
     return new ListView.builder(
         itemBuilder: (context, index){
           if(index<_todoItems.length){
-            return _buildTodoItem(_todoItems[index]);
+            return _buildTodoItem(_todoItems[index], index);
           }else return null;
         }
      );
   }
 
-  Widget _buildTodoItem(String todoText) {
+  Widget _buildTodoItem(String todoText, int index) {
     return new ListTile(
       title: Text(todoText),
+      onTap: ()=>_isEditMode?_confirmRemoveItem(index):null,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Re:do'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Re:do'),
         actions: [
-          IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: _testDebuglogbah
-          )],
+          IconButton(icon: Icon(Icons.edit),onPressed: ()=>_switchToEditMode()),
+          IconButton(icon: Icon(Icons.more_vert),onPressed:  ()=>_testDebuglogbah("more button pressed")),
+        ],
       ),
       body: _buildTodoList(),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _pushAddTodoItemScreen,
         tooltip: 'Add a new task',
-        child: new Icon(Icons.add),
+        child: Icon(Icons.add),
       ),
     );
   }
 
   void _pushAddTodoItemScreen() {
     Navigator.of(context).push(
-        new MaterialPageRoute(
+        MaterialPageRoute(
             builder: (context) {
-              return new Scaffold(
-                appBar: new AppBar(
-                    title: new Text('Add a new Task')
-                ),
-                body: new TextField(
+              return Scaffold(
+                appBar: AppBar(title: Text('Add a new Task')),
+                body: TextField(
                   autofocus: true,
                   onSubmitted: (val){
                     _addTodoItem(val);
                     Navigator.pop(context);
                   },
-                  decoration: new InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Enter something to do...',
                     contentPadding: const EdgeInsets.all(16.0),
                   ),
@@ -87,7 +90,29 @@ class TodoAppState extends State<TodoApp> {
     );
   }
 
-  void _testDebuglogbah() {
-    print("test");
+  void _confirmRemoveItem(int index){
+    showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return new AlertDialog(
+          title: Text('Remove ${_todoItems[index]}?'),
+          actions: <Widget>[
+            FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text('CANCEL')),
+            FlatButton(onPressed: (){_removeTodoItem(index);Navigator.of(context).pop();}, child: Icon(Icons.delete_rounded)),
+          ]
+        );
+      }
+    );
+  }
+
+  void _removeTodoItem(int index) {
+    setState(() => _todoItems.removeAt(index));
+  }
+
+  void _switchToEditMode() {
+    _isEditMode = !_isEditMode;
+  }
+  void _testDebuglogbah(String testext) {
+    print(testext);
   } //placeholder function for future upgrades
 }
