@@ -1,29 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:re_do/AppTheme.dart';
+import 'ThemeWork.dart';
 
-void main() => runApp(new Appln());
+void main() {
+  runApp(ChangeNotifierProvider<AppStateNotifier>(
+    create: (context) => AppStateNotifier(),
+    child: Appln(),
+));
+}
 
 class Appln extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Re:do',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.cyanAccent,
-      ),
-      home: TodoApp()
+    return Consumer<AppStateNotifier>(
+      builder: (context, appState, child){
+        return MaterialApp(
+            title: 'Re:do',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: appState.isDark? ThemeMode.dark : ThemeMode.light,
+            home: TodoApp()
+        );
+      }
     );
   }
 }
 
 class TodoApp extends StatefulWidget {
   @override
-  createState() => new TodoAppState();
+  TodoAppState createState() => new TodoAppState();
 }
 
 class TodoAppState extends State<TodoApp> {
   List<String> _todoItems = [];
-  var _isEditMode = false;
+  bool _isEditMode = false;
 
   void _addTodoItem(String task){
     setState(() {
@@ -49,10 +60,19 @@ class TodoAppState extends State<TodoApp> {
   Widget _buildTodoItem(String todoText, int index) {
     return new ListTile(
       title: Text(todoText),
-      onTap: ()=>_testDebuglogbah("tapped "+todoText),
+      onTap: ()=>_isEditMode?_testDebuglogbah("tapped "+todoText):_testDebuglogbah("edit "+todoText),
       onLongPress: ()=>_isEditMode?_confirmRemoveItem(index):null,
     );
   }
+
+/*  @override
+  void initState() {
+    super.initState();
+    currentTheme.addListener((){
+      print('current theme: '+ (?"light":"dark"));
+      setState((){});
+    });
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +137,7 @@ class TodoAppState extends State<TodoApp> {
 
   void _switchToEditMode() {
     _isEditMode = !_isEditMode;
+    Provider.of<AppStateNotifier>(context, listen:false).switchTheme(_isEditMode);
   }
   void _testDebuglogbah(String testext) {
     print(testext);
