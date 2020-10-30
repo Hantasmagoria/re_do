@@ -32,19 +32,25 @@ class TodoAppState extends State<TodoApp> {
   }
 
   Widget _buildTodoList() {
-    return new ListView.builder(
+    return new ListView.separated(
+        padding: EdgeInsets.all(MediaQuery.of(context).size.width*0.06),
+        itemCount: _todoItems.length,
         itemBuilder: (context, index){
           if(index<_todoItems.length){
             return _buildTodoItem(_todoItems[index], index);
           }else return null;
-        }
+        },
+        separatorBuilder: (context, index){
+          return Divider();
+        },
      );
   }
 
   Widget _buildTodoItem(String todoText, int index) {
     return new ListTile(
       title: Text(todoText),
-      onTap: ()=>_isEditMode?_confirmRemoveItem(index):null,
+      onTap: ()=>_testDebuglogbah("tapped "+todoText),
+      onLongPress: ()=>_isEditMode?_confirmRemoveItem(index):null,
     );
   }
 
