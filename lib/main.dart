@@ -38,21 +38,23 @@ class TodoAppState extends State<TodoApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(     //TODO: revamp normal appbar to floating appbar
-        title: Text('Re:do'),
-        actions: [
-          IconButton(icon: Icon(Icons.edit),tooltip: 'edit',onPressed: ()=>_switchToEditMode()),
-          IconButton(icon: Icon(Icons.settings),tooltip: 'options',onPressed:  ()=>_pushSettingsScreen()),    //TODO: popup/dropdown menu for changing settings
-        ],
-      ),
-      body: _buildTodoList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _pushAddTodoItemScreen,
-        tooltip: 'Add a new task',
-        child: Icon(Icons.add),
-      ),
-    );
+    return Consumer<AppStateNotifier>(builder: (context, appState, child){
+      return Scaffold(
+        appBar: AppBar(     //TODO: revamp normal appbar to floating appbar
+          title: Text('Re:do'),
+          actions: [
+            IconButton(icon: Icon(appState.isEdit?Icons.save:Icons.edit),tooltip: 'edit',onPressed: ()=>_switchToEditMode()),
+            IconButton(icon: Icon(Icons.settings),tooltip: 'options',onPressed:  ()=>_pushSettingsScreen()),    //TODO: popup/dropdown menu for changing settings
+          ],
+        ),
+        body: _buildTodoList(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _pushAddTodoItemScreen,
+          tooltip: 'Add a new task',
+          child: Icon(Icons.add),
+        ),
+      );
+    });
   }
 
   Widget _buildTodoList() {
