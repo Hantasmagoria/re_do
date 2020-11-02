@@ -34,7 +34,6 @@ class TodoApp extends StatefulWidget {
 
 class TodoAppState extends State<TodoApp> {
   List<String> _todoItems = [];
-  bool _isEditMode = false;
 
   void _addTodoItem(String task){
     setState(() {
@@ -58,10 +57,15 @@ class TodoAppState extends State<TodoApp> {
   }
 
   Widget _buildTodoItem(String todoText, int index) {
-    return new ListTile(
-      title: Text(todoText),
-      onTap: ()=>_isEditMode?_testDebuglogbah("tapped "+todoText):_testDebuglogbah("edit "+todoText),
-      onLongPress: ()=>_isEditMode?_confirmRemoveItem(index):null,
+    return Consumer<AppStateNotifier>(
+      builder: (context, appState, child){
+        return new ListTile(
+          title: Text(todoText),
+          onTap: ()=>appState.isEdit?_testDebuglogbah("tapped "+todoText):_testDebuglogbah("edit "+todoText),   //TODO: entry card revamp
+          onLongPress: ()=>appState.isEdit?_testDebuglogbah("LongPressed "+todoText):null,
+          trailing: appState.isEdit?IconButton(icon: Icon(Icons.delete), color: Colors.red,onPressed: ()=>_confirmRemoveItem(index)):null,
+        );
+      }
     );
   }
 
@@ -81,7 +85,7 @@ class TodoAppState extends State<TodoApp> {
         title: Text('Re:do'),
         actions: [
           IconButton(icon: Icon(Icons.edit),onPressed: ()=>_switchToEditMode()),
-          IconButton(icon: Icon(Icons.more_vert),onPressed:  ()=>_testDebuglogbah("more button pressed")),
+          IconButton(icon: Icon(Icons.more_vert),onPressed:  ()=>_testDebuglogbah("more button pressed")),    //TODO: popup/dropdown menu for changing settings
         ],
       ),
       body: _buildTodoList(),
@@ -136,8 +140,7 @@ class TodoAppState extends State<TodoApp> {
   }
 
   void _switchToEditMode() {
-    _isEditMode = !_isEditMode;
-    Provider.of<AppStateNotifier>(context, listen:false).switchTheme(_isEditMode);
+    Provider.of<AppStateNotifier>(context, listen:false).switchEditMode();
   }
   void _testDebuglogbah(String testext) {
     print(testext);
