@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:re_do/AppTheme.dart';
-import 'ThemeWork.dart';
+import 'package:re_do/ThemeWork.dart';
+import 'package:re_do/settings.dart';
 
 void main() {
   runApp(ChangeNotifierProvider<AppStateNotifier>(
@@ -42,7 +43,7 @@ class TodoAppState extends State<TodoApp> {
         title: Text('Re:do'),
         actions: [
           IconButton(icon: Icon(Icons.edit),tooltip: 'edit',onPressed: ()=>_switchToEditMode()),
-          IconButton(icon: Icon(Icons.more_vert),tooltip: 'options',onPressed:  ()=>_switchTheme()),    //TODO: popup/dropdown menu for changing settings
+          IconButton(icon: Icon(Icons.settings),tooltip: 'options',onPressed:  ()=>_pushSettingsScreen()),    //TODO: popup/dropdown menu for changing settings
         ],
       ),
       body: _buildTodoList(),
@@ -82,12 +83,6 @@ class TodoAppState extends State<TodoApp> {
     );
   }
 
-  void _addTodoItem(String task){
-    setState(() {
-      if(task.length!=0)_todoItems.add(task);
-    });
-  }
-
   void _pushAddTodoItemScreen() {
     Navigator.of(context).push(
         MaterialPageRoute(
@@ -109,6 +104,16 @@ class TodoAppState extends State<TodoApp> {
             }
         )
     );
+  }
+
+  void _pushSettingsScreen() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Settings()));
+  }
+
+  void _addTodoItem(String task){
+    setState(() {
+      if(task.length!=0)_todoItems.add(task);
+    });
   }
 
   void _confirmRemoveItem(int index){
@@ -134,9 +139,9 @@ class TodoAppState extends State<TodoApp> {
     Provider.of<AppStateNotifier>(context, listen:false).switchEditMode();
   }
 
-  void _switchTheme() {
+ /* void _switchTheme() {
     Provider.of<AppStateNotifier>(context, listen:false).switchTheme('darkSwitch');
-  }
+  }*/
 
   void _testDebuglogbah(String testext) {
     print(testext);
