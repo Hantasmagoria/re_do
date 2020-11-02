@@ -14,15 +14,15 @@ class Appln extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppStateNotifier>(
-      builder: (context, appState, child){
-        return MaterialApp(
-            title: 'Re:do',
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: appState.isDark? ThemeMode.dark : ThemeMode.light,
-            home: TodoApp()
-        );
-      }
+        builder: (context, appState, child){
+          return MaterialApp(
+              title: 'Re:do',
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: appState.isDark? ThemeMode.dark : ThemeMode.light,
+              home: TodoApp()
+          );
+        }
     );
   }
 }
@@ -35,10 +35,23 @@ class TodoApp extends StatefulWidget {
 class TodoAppState extends State<TodoApp> {
   List<String> _todoItems = [];
 
-  void _addTodoItem(String task){
-    setState(() {
-      if(task.length!=0)_todoItems.add(task);      //placeholder generated to-do item
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(     //TODO: revamp normal appbar to floating appbar
+        title: Text('Re:do'),
+        actions: [
+          IconButton(icon: Icon(Icons.edit),tooltip: 'edit',onPressed: ()=>_switchToEditMode()),
+          IconButton(icon: Icon(Icons.more_vert),tooltip: 'options',onPressed:  ()=>_switchTheme()),    //TODO: popup/dropdown menu for changing settings
+        ],
+      ),
+      body: _buildTodoList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _pushAddTodoItemScreen,
+        tooltip: 'Add a new task',
+        child: Icon(Icons.add),
+      ),
+    );
   }
 
   Widget _buildTodoList() {
@@ -69,32 +82,10 @@ class TodoAppState extends State<TodoApp> {
     );
   }
 
-/*  @override
-  void initState() {
-    super.initState();
-    currentTheme.addListener((){
-      print('current theme: '+ (?"light":"dark"));
-      setState((){});
+  void _addTodoItem(String task){
+    setState(() {
+      if(task.length!=0)_todoItems.add(task);
     });
-  }*/
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Re:do'),
-        actions: [
-          IconButton(icon: Icon(Icons.edit),onPressed: ()=>_switchToEditMode()),
-          IconButton(icon: Icon(Icons.more_vert),onPressed:  ()=>_testDebuglogbah("more button pressed")),    //TODO: popup/dropdown menu for changing settings
-        ],
-      ),
-      body: _buildTodoList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _pushAddTodoItemScreen,
-        tooltip: 'Add a new task',
-        child: Icon(Icons.add),
-      ),
-    );
   }
 
   void _pushAddTodoItemScreen() {
@@ -128,7 +119,7 @@ class TodoAppState extends State<TodoApp> {
           title: Text('Remove ${_todoItems[index]}?'),
           actions: <Widget>[
             FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text('CANCEL')),
-            FlatButton(onPressed: (){_removeTodoItem(index);Navigator.of(context).pop();}, child: Icon(Icons.delete_rounded)),
+            FlatButton(onPressed: (){_removeTodoItem(index);Navigator.of(context).pop();}, child: Icon(Icons.delete_rounded, color: Colors.red,),),
           ]
         );
       }
@@ -142,6 +133,11 @@ class TodoAppState extends State<TodoApp> {
   void _switchToEditMode() {
     Provider.of<AppStateNotifier>(context, listen:false).switchEditMode();
   }
+
+  void _switchTheme() {
+    Provider.of<AppStateNotifier>(context, listen:false).switchTheme('darkSwitch');
+  }
+
   void _testDebuglogbah(String testext) {
     print(testext);
   } //placeholder function for future upgrades
