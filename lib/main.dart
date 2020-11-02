@@ -76,6 +76,7 @@ class TodoAppState extends State<TodoApp> {
     return Consumer<AppStateNotifier>(
       builder: (context, appState, child){
         return new ListTile(
+          leading: appState.isEdit?Icon(Icons.drag_handle_rounded):null,
           title: Text(todoText),
           onTap: ()=>appState.isEdit?_testDebuglogbah("tapped "+todoText):_testDebuglogbah("edit "+todoText),   //TODO: entry card revamp
           onLongPress: ()=>appState.isEdit?_testDebuglogbah("LongPressed "+todoText):null,
@@ -140,10 +141,6 @@ class TodoAppState extends State<TodoApp> {
   void _switchToEditMode() {
     Provider.of<AppStateNotifier>(context, listen:false).switchEditMode();
   }
-
- /* void _switchTheme() {
-    Provider.of<AppStateNotifier>(context, listen:false).switchTheme('darkSwitch');
-  }*/
 
   void _testDebuglogbah(String testext) {
     print(testext);
